@@ -40,9 +40,10 @@ database.ref("player").on("value", function(snapshot) {
     $(".playerTwo").html("Waiting for Player2...");
   } else {
     // find out if player 1 or player 2
-    if(snapshot.child("1").exists()) {
+    if(snapshot.child("1").exists() ) {
       // $(".playerOne").attr("id","playerOne_1")
       // $(".name").html(`<h1>Hi, ${snapshot.child("1").val().names}, you are player1 `)
+      
       $("#playerOne").html(
         `<h1 id="Player1Name">${snapshot.child("1").val().names}</h1>
         <br>
@@ -50,6 +51,8 @@ database.ref("player").on("value", function(snapshot) {
          <p>Wins:${snapshot.child("1").val().wins} Losses: ${snapshot.child("1").val().losses}</p>
         `
       );
+    
+      
     
     
       /// put the rest of the data
@@ -59,6 +62,7 @@ database.ref("player").on("value", function(snapshot) {
       $(".playerOne").html("Waiting for Player1...");
     }
     if (snapshot.child("2").exists()){
+     
       $("#playerTwo").html(
         `<h1 id="Player2Name">${snapshot.child("2").val().names}</h1>
          <br>
@@ -67,7 +71,7 @@ database.ref("player").on("value", function(snapshot) {
          <p>Wins:${snapshot.child("2").val().wins} Losses: ${snapshot.child("2").val().losses}</p>
         `
       );
-     
+    
     } else {
       $("#playerTwo").empty();
       $(".playerTwo").html("Waiting for Player2...");
@@ -75,6 +79,7 @@ database.ref("player").on("value", function(snapshot) {
   }
 
   if(numPlayers===2){
+    
     $(".playerTwo_2").html(
       `<h1 id="Player2Name">${snapshot.child("2").val().names}</h1>
        <p class="spr" value="r">Rock</p>
@@ -93,22 +98,29 @@ database.ref("player").on("value", function(snapshot) {
        <p>Wins:${snapshot.child("1").val().wins} Losses: ${snapshot.child("1").val().losses}</p>
       `
     );
+  
+    
     if(snapshot.child("2").exists() && !snapshot.child("1/choice").exists() ){
       $(".join").text("it is Your Turn!!!!")
     }
-
+    
     if(!snapshot.child("2/choice").exists() && snapshot.child("1/choice").exists() ){
       $("#choose").text("it is Your Turn!!!!")
       $(".spr").css("visibility","visible");
     }
     
-     player1_click();
-     player2_clkick();
-      
+    if(snapshot.child("2").val().choice==="" && snapshot.child("1").val().choice !==""){
+      $("#choose").text("it is Your Turn!!!!")
+      $(".spr").css("visibility","visible");
+    }
+    
+    player1_click();
+    player2_click();
+    
     if(snapshot.child("1/choice").exists() && snapshot.child("2/choice").exists() ){
       if(snapshot.child("1").val().choice !=="" && snapshot.child("2").val().choice !==""  ){
         Player1choice=snapshot.child("1").val().choice;
-        Player2choice=snapshot.child("2").val().choice;
+        Player2choice=snapshot.child("2").val().choice;  
         $("#playerTwo").html(
           `<h1 id="Player2Name">${snapshot.child("2").val().names}</h1>
            <h1>${Player2choice}</h1>
@@ -131,66 +143,70 @@ database.ref("player").on("value", function(snapshot) {
 
       }
       if(Player1choice !=="" && Player2choice !=="" && counter1 !==0){
+      
        test();
+        
         
         counter1=0;
         
-        database.ref("player/1").set({
-          
+        database.ref("player/1").update({
+          choice:"",
           wins:Player1win,
           names:snapshot.child("1").val().names,
           losses:Player1loss
         })
-        database.ref("player/2").set({
-          
+        database.ref("player/2").update({
+          choice:"",
           wins:Player2win,
           names:snapshot.child("2").val().names,
           losses:Player2loss
         })
+      
         setTimeout(function(){
           $(".result").empty();
-          counter1=1;
           
-          // $("#playerOne").html(
-          //   `<h1 id="Player1Name">${snapshot.child("1").val().names}</h1>
-          //   <br>
-          //   <br>
-          //    <p>Wins:${snapshot.child("1").val().wins} Losses: ${snapshot.child("1").val().losses}</p>
-          //   `
-          // );
-          // $("#playerTwo").html(
-          //   `<h1 id="Player2Name">${snapshot.child("2").val().names}</h1>
-          //    <br>
-          //    <br>
-          //    <br>
-          //    <p>Wins:${snapshot.child("2").val().wins} Losses: ${snapshot.child("2").val().losses}</p>
-          //   `
-          // );
-          // $(".playerTwo_2").html(
-          //   `<h1 id="Player2Name">${snapshot.child("2").val().names}</h1>
-          //    <p class="spr" value="r">Rock</p>
-          //    <p class="spr" value="p">Paper</p>
-          //    <p class="spr" value="s">Scissors</p>
-          //    <p>Wins:${snapshot.child("2").val().wins} Losses: ${snapshot.child("2").val().losses}</p>
-          //   `
-          // );
+
+          $(".playerOne_2").html(
+            `<h1 id="Player1Name">${snapshot.child("1").val().names}</h1>
+            <br>
+            <br>
+            <br>
+            <p>Wins:${Player1win} Losses: ${Player1loss}</p>
+            `
+          );
+          $(".playerTwo_1").html(
+            `<h1 id="Player2Name">${snapshot.child("2").val().names}</h1>
+             <br>
+             <br>
+             <br>
+             <p>Wins:${Player2win} Losses: ${Player2loss}</p>
+            `
+          );
+         
+          $(".playerTwo_2").html(
+            `<h1 id="Player2Name">${snapshot.child("2").val().names}</h1>
+             <p class="spr" value="r">Rock</p>
+             <p class="spr" value="p">Paper</p>
+             <p class="spr" value="s">Scissors</p>
+             <p>Wins:${Player2win} Losses: ${Player2loss}</p>
+            `
+          );
           
-          // $(".playerOne_1").html(
-          //   `<h1 id="Player1Name">${snapshot.child("1").val().names}</h1>
-          //   <p class="rps" value="r">Rock</p>
-          //   <p class="rps" value="p">Paper</p>
-          //   <p class="rps" value="s">Scissors</p>
-          //    <p>Wins:${snapshot.child("1").val().wins} Losses: ${snapshot.child("1").val().losses}</p>
-          //   `
-          // );
+          $(".playerOne_1").html(
+            `<h1 id="Player1Name">${snapshot.child("1").val().names}</h1>
+            <p class="rps" value="r">Rock</p>
+            <p class="rps" value="p">Paper</p>
+            <p class="rps" value="s">Scissors</p>
+             <p>Wins:${Player1win} Losses: ${Player1loss}</p>
+            `
+          );
+          $(".join").text("it is Your Turn!!!!");
+          $("#choose").text(`Waiting for ${$("#Player1Name").text()} to choose`)
           $(".spr").css("visibility","hidden");
-          
-          counter1=1;
-          player1_click()
-          player2_clkick()
-          test()
           Player1choice="";
           Player2choice="";
+          counter1=1;
+          start();
         },2000)
       
       }
@@ -222,8 +238,10 @@ function startPlayerOne() {
   }
 
 function startPlayerTwo() {
+ 
   $(".playerOne").addClass("playerOne_2")
   $(".playerTwo").addClass("playerTwo_2");
+
   var conTwo = database.ref("player/2");
   conTwo.set({
     losses: Player2loss,
@@ -251,7 +269,7 @@ function player1_click(){
       $(".join").text(`Waiting for ${$("#Player2Name").text()} to choose`);  
        
       Player1choice=$(this).text();
-      database.ref("player/1").set({
+      database.ref("player/1").update({
         choice:Player1choice,
         wins:Player1win,
         names:$("#Player1Name").text(),
@@ -269,13 +287,13 @@ function player1_click(){
   }
 
 
-function player2_clkick(){
+function player2_click(){
   
     $(".spr").on("click",function(){
       
       Player2choice=$(this).text()
       
-      database.ref("player/2").set({
+      database.ref("player/2").update({
         choice:Player2choice,
         wins:Player2win,
         names:$("#Player2Name").text(),
@@ -303,7 +321,11 @@ $("#start").on("click", function(event) {
     
     
     $(".name").prepend(`<p id="choose">Waiting for ${$("#Player1Name").text()} to choose</p>`) 
+    if($("#playerTwo>#Player2Name").length===0){
     startPlayerTwo();
+    } else if($("#playerTwo>#Player2Name").length>0){
+      startPlayerOne();
+    }
     
    
   }
@@ -312,7 +334,7 @@ $("#start").on("click", function(event) {
 function test(){
   if(Player1choice===Player2choice){
     $(".result").html(`Tie Game`) 
-  }
+  }else{
   if(Player1choice==="Rock"){
     if(Player2choice==="Paper"){
         Player1loss++;
@@ -335,6 +357,7 @@ function test(){
       $(".result").html(`${$("#Player1Name").text()} Wins`) 
     }
   }
+}
 }
 $("#send").on("click", function (event) {
   event.preventDefault()
@@ -377,6 +400,8 @@ console.log(keys)
 }
 });
 
+player1_click();
+player2_click();
 start()
 
 
